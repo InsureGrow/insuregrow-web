@@ -2,7 +2,9 @@
 
 import { useState } from 'react';
 
-export type LeadFormProps = { onSuccess?: () => void };
+export type LeadFormProps = {
+  onSuccess?: () => void;
+};
 
 export default function LeadForm({ onSuccess }: LeadFormProps) {
   const [loading, setLoading] = useState(false);
@@ -12,12 +14,14 @@ export default function LeadForm({ onSuccess }: LeadFormProps) {
     e.preventDefault();
     setLoading(true);
     setError(null);
+
     try {
-      // TODO: your submit logic
-      await new Promise(r => setTimeout(r, 200));
-      onSuccess?.(); // fire callback
-    } catch (err: any) {
-      setError(err?.message ?? 'Something went wrong');
+      // TODO: replace with your real submit logic (fetch/Supabase)
+      await new Promise<void>((resolve) => setTimeout(resolve, 200));
+      onSuccess?.();
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Something went wrong';
+      setError(message);
     } finally {
       setLoading(false);
     }
