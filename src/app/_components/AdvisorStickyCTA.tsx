@@ -1,66 +1,33 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import dynamic from "next/dynamic";
-
-// Lazy-load the form so it doesn't render until opened
-const LeadForm = dynamic(() => import("./LeadForm"), { ssr: false });
+import { useState } from 'react';
+import LeadForm from './LeadForm'; // ✅ default import matches default export above
 
 export default function AdvisorStickyCTA() {
   const [open, setOpen] = useState(false);
 
-  // ESC to close
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, []);
-
-  // Lock background scroll when modal is open
-  useEffect(() => {
-    document.documentElement.classList.toggle("overflow-hidden", open);
-    return () => document.documentElement.classList.remove("overflow-hidden");
-  }, [open]);
-
   return (
     <>
-      {/* Sticky CTA bar */}
-      <div
-        className="fixed inset-x-0 bottom-0 z-40"
-        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
-      >
-        <div className="mx-auto max-w-5xl px-3 pb-3">
-          <div className="flex items-center justify-center rounded-t-2xl border bg-white/90 p-2 shadow-lg backdrop-blur">
-            <button
-              onClick={() => setOpen(true)}
-              className="w-full rounded-xl px-4 py-3 text-sm font-semibold text-white shadow-md
-                         bg-gradient-to-r from-indigo-600 via-indigo-500 to-indigo-600
-                         bg-[length:200%_100%] animate-shine hover:opacity-95"
-              aria-haspopup="dialog"
-              aria-expanded={open}
-            >
-              Consult IRDAI registered advisor
-            </button>
-          </div>
+      {/* Sticky footer CTA */}
+      <div className="fixed bottom-0 inset-x-0 z-50 bg-white border-t">
+        <div className="max-w-3xl mx-auto p-3 flex items-center justify-between">
+          <span className="text-sm sm:text-base">Consult IRDAI registered advisor</span>
+          <button
+            onClick={() => setOpen(true)}
+            className="px-4 py-2 rounded bg-black text-white"
+          >
+            Open form
+          </button>
         </div>
       </div>
 
-      {/* Modal mounts only when open */}
+      {/* Simple modal */}
       {open && (
-        <div className="fixed inset-0 z-50" role="dialog" aria-modal="true" aria-label="Consult advisor form">
-          {/* Backdrop */}
-          <div className="absolute inset-0 bg-black/40" onClick={() => setOpen(false)} />
-          {/* Panel */}
-          <div className="absolute inset-x-0 bottom-0 mx-auto w-full max-w-2xl rounded-t-2xl border bg-white p-4 shadow-2xl">
-            <div className="mb-2 flex items-center justify-between">
-              <h2 className="text-base font-semibold">Talk to an advisor</h2>
-              <button
-                onClick={() => setOpen(false)}
-                className="rounded px-2 py-1 text-xs text-slate-600 hover:bg-slate-100"
-                aria-label="Close form"
-              >
-                Close
-              </button>
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl p-4 max-w-md w-full">
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-lg font-semibold">Request a Callback</h2>
+              <button onClick={() => setOpen(false)} aria-label="Close">✕</button>
             </div>
 
             {/* Close modal after successful submit */}
