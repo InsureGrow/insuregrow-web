@@ -1,48 +1,36 @@
-"use client";
-import { useState } from "react";
+'use client';
 
-export default function LeadForm() {
+import { useState } from 'react';
+
+export type LeadFormProps = { onSuccess?: () => void };
+
+export default function LeadForm({ onSuccess }: LeadFormProps) {
   const [loading, setLoading] = useState(false);
-  const [ok, setOk] = useState<boolean | null>(null);
-  const [err, setErr] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
-    setOk(null);
-    setErr(null);
-
-    const form = e.currentTarget;
-    const data = Object.fromEntries(new FormData(form).entries());
-
-    const res = await fetch("/api/leads", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
-
-    setLoading(false);
-    if (res.ok) {
-      setOk(true);
-      form.reset();
-    } else {
-      const j = await res.json().catch(() => ({}));
-      setErr(j?.error ?? "Something went wrong");
-      setOk(false);
+    setError(null);
+    try {
+      // TODO: your submit logic
+      await new Promise(r => setTimeout(r, 200));
+      onSuccess?.(); // fire callback
+    } catch (err: any) {
+      setError(err?.message ?? 'Something went wrong');
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
-    <form onSubmit={onSubmit} className="max-w-md space-y-3">
-      <input name="name" placeholder="Your name" className="w-full border rounded p-2" />
-      <input name="email" type="email" required placeholder="Email" className="w-full border rounded p-2" />
-      <input name="phone" placeholder="Phone" className="w-full border rounded p-2" />
-      <textarea name="message" placeholder="What do you need?" className="w-full border rounded p-2" />
-      <button disabled={loading} className="rounded px-4 py-2 border">
-        {loading ? "Submitting…" : "Send"}
+    <form onSubmit={handleSubmit} className="space-y-3">
+      <input name="name" placeholder="Your name" className="border p-2 w-full" required />
+      <input name="phone" placeholder="Phone" className="border p-2 w-full" required />
+      {error && <p className="text-red-500 text-sm">{error}</p>}
+      <button type="submit" disabled={loading} className="px-4 py-2 rounded bg-black text-white">
+        {loading ? 'Submitting…' : 'Submit'}
       </button>
-      {ok && <p className="text-sm">Thanks! I’ll get back to you.</p>}
-      {err && <p className="text-sm text-red-600">{err}</p>}
     </form>
   );
 }
